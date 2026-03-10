@@ -15094,9 +15094,22 @@ void Player::_LoadTalents(PreparedQueryResult result)
             // xinef: checked
             uint32 spellId = (*result)[0].Get<uint32>();
             uint8 specMask = (*result)[1].Get<uint8>();
-            addTalent(spellId, specMask, 0);
+
             TalentSpellPos const* talentPos = GetTalentSpellPos(spellId);
-            ASSERT(talentPos);
+            if (!talentPos)
+            {
+                LOG_WARN("entities.player.loading", "Player::_LoadTalents: Player {} ({}) has talent spell {} that no longer exists in talent DBC data. Skipping and removing from DB.",
+                    GetName(), GetGUID().ToString(), spellId);
+
+                // Queue deletion from database
+                CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHAR_TALENT_BY_SPELL);
+                stmt->SetData(0, GetGUID().GetCounter());
+                stmt->SetData(1, spellId);
+                CharacterDatabase.Execute(stmt);
+                continue;
+            }
+
+            addTalent(spellId, specMask, 0);
 
         } while (result->NextRow());
     }
