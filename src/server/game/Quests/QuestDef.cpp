@@ -205,6 +205,9 @@ uint32 Quest::XPValue(uint8 playerLevel) const
         return 0;
     }
 
+#if 1 // Always full XP for gray quests
+    int32 diffFactor = 10;
+#else
     int32 diffFactor = 2 * (quest_level - playerLevel) + 20;
     if (diffFactor < 1)
     {
@@ -214,6 +217,7 @@ uint32 Quest::XPValue(uint8 playerLevel) const
     {
         diffFactor = 10;
     }
+#endif
 
     uint32 xp = diffFactor * xpentry->Exp[RewardXPDifficulty] / 10;
     if (xp <= 100)
