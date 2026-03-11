@@ -12936,7 +12936,7 @@ void Unit::ProcSkillsAndReactives(bool isVictim, Unit* target, uint32 procFlag, 
                 if (procExtra & PROC_EX_DODGE)
                 {
                     // Update AURA_STATE on dodge
-                    if (!IsClass(CLASS_ROGUE, CLASS_CONTEXT_ABILITY_REACTIVE)) // skip Rogue Riposte
+                    //if (!IsClass(CLASS_ROGUE, CLASS_CONTEXT_ABILITY_REACTIVE)) // skip Rogue Riposte
                     {
                         ModifyAuraState(AURA_STATE_DEFENSE, true);
                         StartReactiveTimer(REACTIVE_DEFENSE);
