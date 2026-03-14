@@ -660,6 +660,8 @@ namespace lfg
 
             // Xinef: Check dungeon cooldown only for random dungeons
             // Xinef: Moreover check this only if dungeon is not started, afterwards its obvious that players will have the cooldown
+            // Nostalgia: Disabled random dungeon cooldown check — players can always re-queue
+#if 0
             if (joinData.result == LFG_JOIN_OK && !isContinue && rDungeonId)
             {
                 if (player->HasAura(LFG_SPELL_DUNGEON_COOLDOWN)) // xinef: added !isContinue
@@ -672,6 +674,7 @@ namespace lfg
                                 joinData.result = LFG_JOIN_PARTY_RANDOM_COOLDOWN;
                 }
             }
+#endif
         }
 
         if (isRaid)
