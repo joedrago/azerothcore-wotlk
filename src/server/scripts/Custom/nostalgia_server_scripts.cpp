@@ -9,7 +9,7 @@ class AutoJoinChannelPlayerScript : public PlayerScript
 public:
     AutoJoinChannelPlayerScript() : PlayerScript("AutoJoinChannelPlayerScript") {}
 
-    void OnLogin(Player* player) override
+    void OnPlayerLogin(Player* player) override
     {
         if (!player)
             return;
@@ -22,8 +22,7 @@ public:
         if (!channel)
             return;
 
-        if (!channel->IsOn(player->GetGUID()))
-            channel->JoinChannel(player, "");
+        channel->JoinChannel(player, "");
     }
 };
 

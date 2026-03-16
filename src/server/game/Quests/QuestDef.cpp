@@ -199,6 +199,15 @@ void Quest::LoadQuestTemplateAddon(Field* fields)
 uint32 Quest::XPValue(uint8 playerLevel) const
 {
     int32 quest_level = (Level == -1 ? playerLevel : Level);
+
+    // Clamp quest level to no lower than (playerLevel - 4) so old quests
+    // grant XP as if they were at most 4 levels below the player.
+    // e.g. Level 34 player turning in a level 20 quest gets level 30 XP.
+    if (quest_level < static_cast<int32>(playerLevel) - 4)
+    {
+        quest_level = static_cast<int32>(playerLevel) - 4;
+    }
+
     const QuestXPEntry* xpentry = sQuestXPStore.LookupEntry(quest_level);
     if (!xpentry)
     {
