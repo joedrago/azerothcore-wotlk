@@ -115,6 +115,7 @@ WorldSession::WorldSession(uint32 id, std::string&& name, uint32 accountFlags, s
     _security(sec),
     _skipQueue(skipQueue),
     _accountId(id),
+    _virtualRealmId(0),
     _accountName(std::move(name)),
     _accountFlags(accountFlags),
     m_expansion(expansion),

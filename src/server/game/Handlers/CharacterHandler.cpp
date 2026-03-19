@@ -255,6 +255,7 @@ void WorldSession::HandleCharEnumOpcode(WorldPacket& /*recvData*/)
 
     stmt->SetData(0, PET_SAVE_AS_CURRENT);
     stmt->SetData(1, GetAccountId());
+    stmt->SetData(2, GetVirtualRealmId());
 
     _queryProcessor.AddCallback(CharacterDatabase.AsyncQuery(stmt).WithPreparedCallback(std::bind(&WorldSession::HandleCharEnum, this, std::placeholders::_1)));
 }
@@ -398,8 +399,9 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recvData)
                     return;
                 }
 
-                CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_SUM_CHARS);
+                CharacterDatabasePreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_SUM_CHARS_BY_REALM);
                 stmt->SetData(0, GetAccountId());
+                stmt->SetData(1, GetVirtualRealmId());
                 queryCallback.SetNextQuery(CharacterDatabase.AsyncQuery(stmt));
             })
         .WithChainingPreparedCallback([this, createInfo](QueryCallback& queryCallback, PreparedQueryResult result)
@@ -552,6 +554,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recvData)
                             newChar->setCinematic(1);                         // not show intro
 
                         newChar->SetAtLoginFlag(AT_LOGIN_FIRST);              // First login
+                        newChar->SetRealmId(GetVirtualRealmId());
 
                         CharacterDatabaseTransaction characterTransaction = CharacterDatabase.BeginTransaction();
                         LoginDatabaseTransaction trans = LoginDatabase.BeginTransaction();
@@ -562,13 +565,13 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recvData)
 
                         LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_DEL_REALM_CHARACTERS_BY_REALM);
                         stmt->SetData(0, GetAccountId());
-                        stmt->SetData(1, realm.Id.Realm);
+                        stmt->SetData(1, GetVirtualRealmId());
                         trans->Append(stmt);
 
                         stmt = LoginDatabase.GetPreparedStatement(LOGIN_REP_REALM_CHARACTERS);
                         stmt->SetData(0, createInfo->CharCount);
                         stmt->SetData(1, GetAccountId());
-                        stmt->SetData(2, realm.Id.Realm);
+                        stmt->SetData(2, GetVirtualRealmId());
                         trans->Append(stmt);
 
                         LoginDatabase.CommitTransaction(trans);
@@ -607,6 +610,13 @@ void WorldSession::HandleCharDeleteOpcode(WorldPacket& recvData)
 
     // Initiating
     uint32 initAccountId = GetAccountId();
+
+    // Verify character belongs to this virtual realm (defense in depth)
+    if (!IsLegitCharacterForAccount(guid))
+    {
+        sScriptMgr->OnPlayerFailedDelete(guid, initAccountId);
+        return;
+    }
 
     // can't delete loaded character
     if (ObjectAccessor::FindConnectedPlayer(guid) || sWorldSessionMgr->FindOfflineSessionForCharacterGUID(guid.GetCounter()))

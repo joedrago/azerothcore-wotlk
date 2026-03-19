@@ -1577,20 +1577,28 @@ void World::UpdateRealmCharCount(uint32 accountId)
 
 void World::_UpdateRealmCharCount(PreparedQueryResult resultCharCount,uint32 accountId)
 {
-    uint8 charCount{0};
-    if (resultCharCount)
-    {
-        Field* fields = resultCharCount->Fetch();
-        charCount = uint8(fields[1].Get<uint64>());
-    }
-
     LoginDatabaseTransaction trans = LoginDatabase.BeginTransaction();
 
-    LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_REP_REALM_CHARACTERS);
-    stmt->SetData(0, charCount);
-    stmt->SetData(1, accountId);
-    stmt->SetData(2, realm.Id.Realm);
-    trans->Append(stmt);
+    if (resultCharCount)
+    {
+        do
+        {
+            Field* fields = resultCharCount->Fetch();
+            uint32 realmId = fields[0].Get<uint32>();
+            uint8 charCount = uint8(fields[1].Get<uint64>());
+
+            LoginDatabasePreparedStatement* stmt = LoginDatabase.GetPreparedStatement(LOGIN_DEL_REALM_CHARACTERS_BY_REALM);
+            stmt->SetData(0, accountId);
+            stmt->SetData(1, realmId);
+            trans->Append(stmt);
+
+            stmt = LoginDatabase.GetPreparedStatement(LOGIN_REP_REALM_CHARACTERS);
+            stmt->SetData(0, charCount);
+            stmt->SetData(1, accountId);
+            stmt->SetData(2, realmId);
+            trans->Append(stmt);
+        } while (resultCharCount->NextRow());
+    }
 
     LoginDatabase.CommitTransaction(trans);
 }

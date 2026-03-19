@@ -181,6 +181,7 @@ Player::Player(WorldSession* session): Unit(), m_mover(this)
     m_usedTalentCount = 0;
     m_questRewardTalentCount = 0;
     m_extraBonusTalentCount = 0;
+    m_realmId = 1;
 
     m_regenTimer = 0;
     m_regenTimerCount = 0;
@@ -14773,6 +14774,7 @@ void Player::_SaveCharacter(bool create, CharacterDatabaseTransaction trans)
         stmt = CharacterDatabase.GetPreparedStatement(CHAR_INS_CHARACTER);
         stmt->SetData(index++, GetGUID().GetCounter());
         stmt->SetData(index++, GetSession()->GetAccountId());
+        stmt->SetData(index++, GetRealmId());
         stmt->SetData(index++, GetName());
         stmt->SetData(index++, getRace(true));
         stmt->SetData(index++, getClass());

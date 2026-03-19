@@ -532,6 +532,8 @@ enum CharacterDatabaseStatements : uint32
     CHAR_SEL_WORLD_STATE,
     CHAR_REP_WORLD_STATE,
 
+    CHAR_SEL_SUM_CHARS_BY_REALM,
+
     MAX_CHARACTERDATABASE_STATEMENTS
 };
 

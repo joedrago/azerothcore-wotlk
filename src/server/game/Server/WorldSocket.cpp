@@ -590,15 +590,6 @@ void WorldSocket::HandleAuthSessionCallback(std::shared_ptr<ClientAuthSession> a
         return;
     }
 
-    if (authSession->RealmID != realm.Id.Realm)
-    {
-        SendAuthResponseError(REALM_LIST_REALM_NOT_FOUND);
-        LOG_ERROR("network", "WorldSocket::HandleAuthSession: Client {} requested connecting with realm id {} but this realm has id {} set in config.",
-            GetRemoteIpAddress().to_string(), authSession->RealmID, realm.Id.Realm);
-        DelayedCloseSocket();
-        return;
-    }
-
     // Must be done before WorldSession is created
     bool wardenActive = sWorld->getBoolConfig(CONFIG_WARDEN_ENABLED);
     if (wardenActive && account.OS != "Win" && account.OS != "OSX")
@@ -707,6 +698,8 @@ void WorldSocket::HandleAuthSessionCallback(std::shared_ptr<ClientAuthSession> a
 
     _worldSession = new WorldSession(account.Id, std::move(authSession->Account), account.Flags, shared_from_this(), account.Security,
         account.Expansion, account.MuteTime, account.Locale, account.Recruiter, account.IsRectuiter, account.Security ? true : false, account.TotalTime);
+
+    _worldSession->SetVirtualRealmId(authSession->RealmID);
 
     _worldSession->ReadAddonsInfo(authSession->AddonInfo);
 

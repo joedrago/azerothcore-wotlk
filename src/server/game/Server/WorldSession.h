@@ -460,6 +460,8 @@ public:
     AccountTypes GetSecurity() const { return _security; }
     bool CanSkipQueue() const { return _skipQueue; }
     uint32 GetAccountId() const { return _accountId; }
+    uint32 GetVirtualRealmId() const { return _virtualRealmId; }
+    void SetVirtualRealmId(uint32 realmId) { _virtualRealmId = realmId; }
     Player* GetPlayer() const { return _player; }
     std::string const& GetPlayerName() const;
     std::string GetPlayerInfo() const;
@@ -1253,6 +1255,7 @@ private:
     AccountTypes _security;
     bool _skipQueue;
     uint32 _accountId;
+    uint32 _virtualRealmId;
     std::string _accountName;
     uint32 _accountFlags;
     uint8 m_expansion;

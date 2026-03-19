@@ -1750,6 +1750,9 @@ public:
     void AddBonusTalent(uint32 count) { m_extraBonusTalentCount += count; };
     void RemoveBonusTalent(uint32 count) { m_extraBonusTalentCount -= count; };
 
+    void SetRealmId(uint32 realmId) { m_realmId = realmId; }
+    uint32 GetRealmId() const { return m_realmId; }
+
     // Dual Spec
     void UpdateSpecCount(uint8 count);
     [[nodiscard]] uint8 GetActiveSpec() const { return m_activeSpec; }
@@ -2940,6 +2943,7 @@ protected:
     uint32 m_usedTalentCount;
     uint32 m_questRewardTalentCount;
     uint32 m_extraBonusTalentCount;
+    uint32 m_realmId;
 
     // Social
     PlayerSocial* m_social;

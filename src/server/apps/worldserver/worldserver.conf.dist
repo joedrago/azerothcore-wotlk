@@ -1957,7 +1957,7 @@ CharacterCreating.Disabled.ClassMask = 0
 #        Important:   Number must be >= CharactersPerRealm
 #        Default:     50
 
-CharactersPerAccount = 50
+CharactersPerAccount = 200
 
 #
 #    CharactersPerRealm
