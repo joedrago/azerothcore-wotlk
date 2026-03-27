@@ -1093,7 +1093,7 @@ class spell_dru_swift_flight_passive : public AuraScript
     {
         if (Player* caster = GetCaster()->ToPlayer())
             if (caster->Has310Flyer(false))
-                amount = 310;
+                amount = 510;
     }
 
     void Register() override
