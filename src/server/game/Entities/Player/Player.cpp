@@ -13637,7 +13637,9 @@ uint32 Player::CalculateTalentsPoints() const
 
     talentPointsForLevel += m_extraBonusTalentCount;
     sScriptMgr->OnPlayerCalculateTalentsPoints(this, talentPointsForLevel);
-    return uint32(talentPointsForLevel * sWorld->getRate(RATE_TALENT));
+    uint32 total = uint32(talentPointsForLevel * sWorld->getRate(RATE_TALENT));
+    uint32 maxTalentPoints = 71; // Normal max at level 80
+    return std::min(total, maxTalentPoints);
 }
 
 bool Player::canFlyInZone(uint32 mapid, uint32 zone, SpellInfo const* bySpell)
